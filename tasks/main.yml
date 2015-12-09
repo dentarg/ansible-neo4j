@@ -1,11 +1,10 @@
 ---
-- name: Update python-apt
+- name: Update python-apt and python-pycurl
   sudo: true
-  command: apt-get install python-apt -y
-
-- name: Update python-pycurl
-  sudo: true
-  command: apt-get install python-pycurl -y
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - python-apt
+    - python-pycurl
 
 - name: Add the Neo4j apt key
   apt_key: url=http://debian.neo4j.org/neotechnology.gpg.key state=present

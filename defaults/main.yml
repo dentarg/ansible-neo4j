@@ -4,7 +4,7 @@
 # Specify which Neo4j version you want to install
 # ==================================================
 neo4j_package: neo4j-enterprise
-neo4j_package_version: 2.0.0
+neo4j_package_version: 2.3.1
 
 # ==================================================
 # Server configuration
