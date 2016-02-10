@@ -5,6 +5,7 @@
 #
 
 - hosts: all
+  become: true
   vars_files:
     - defaults/main.yml
     - vars/vagrant.yml
@@ -13,4 +14,5 @@
     - name: Ready
       debug: msg="Done. You should be able to access Neo4j at http://localhost:{{ neo4j_server_webserver_port }}"
   handlers:
-    - include: handlers/main.yml
+    - name: "Restart neo4j"
+      service: name=neo4j-service state=restarted

@@ -1,6 +1,5 @@
 ---
 - name: Update python-apt and python-pycurl
-  sudo: true
   apt: name={{ item }} state=latest update_cache=yes
   with_items:
     - python-apt
@@ -38,7 +37,29 @@
 
 - name: Ensure limits are enabled
   lineinfile: dest=/etc/pam.d/su  regexp="^(# )?session    required   pam_limits.so" line="session    required   pam_limits.so" state=present
-  notify: Reboot
+
+# Restarting manually, vagrant ssh and:
+#
+#    $ sudo service neo4j-service restart
+#     * Restarting Neo4j Graph Database neo4j
+#    WARNING: Max 1024 open files allowed, minimum of 40 000 recommended. See the Neo4j manual.
+#    Starting Neo4j Server...WARNING: not changing user
+#    process [3362]... waiting for server to be ready......... OK.
+#    http://localhost:7474/ is ready.
+#
+# will still warn about the open files limit because of badly written(?)
+# init script, see http://stackoverflow.com/a/28999718/525616
+
+- name: Restart machine to apply the new limits from above
+  command: shutdown -r now "Ansible updates triggered"
+  async: 0
+  poll: 0
+  ignore_errors: true
+
+- name: waiting for server to come back
+  local_action: wait_for host={{ inventory_hostname }}
+                state=started
+  become: false
 
 - name: Ensure Neo4j service is enabled and started
   service: name=neo4j-service enabled=yes state=started
